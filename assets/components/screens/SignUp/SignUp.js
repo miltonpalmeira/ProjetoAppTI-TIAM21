@@ -1,15 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import { Container, InputArea, CustomButton,
     CustomButtonText, SignMessage, SignMessageText, SignMessageTextBold } 
 from './styles';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import SignInput from '../../SignInput';
+import Api from '../../Api';
+import { UserContext } from '../../contexts/UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function({navigation}) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+
     function signIn() {
         navigation.navigate('SignIn');
     }
+
+    async function register() {
+        if (email == '' && name == '' && password == '') {
+            alert('Preencha os campos corretamente!');
+        }
+        else {
+            let res = await Api.signUp(name, email, password);
+            if (res.token) {
+                alert('Usuário cadastrado com sucesso!');
+                await AsyncStorage.setItem('token', json.token);
+                userDispatch({
+                    type: 'setAvatar',
+                    payload: {
+                        avatar: json.data.avatar
+                    }
+                });
+                navigation.navigate('MainTab');
+            }
+            else {
+                alert('Erro: ' + res.error);
+            }
+        }
+    } 
 
     return (
         <Container>
@@ -18,10 +48,26 @@ export default function({navigation}) {
                 style={{marginTop: -125}} 
             />
             <InputArea>
-                <SignInput icon="user" placeholder="Digite o nome" />
-                <SignInput icon="envelope" placeholder="Digite o email" />
-                <SignInput icon="key" placeholder="Digite a senha" />
-                <CustomButton>
+            <SignInput 
+                    icon="user" 
+                    placeholder="Entre com o nome" 
+                    value={name}
+                    onChangeText={t=>setName(t)}
+                />
+                <SignInput 
+                    icon="envelope" 
+                    placeholder="Entre com o email" 
+                    value={email}
+                    onChangeText={t=>setEmail(t)}
+                />
+                <SignInput 
+                    icon="key" 
+                    placeholder="Entre com a senha" 
+                    value={password}
+                    onChangeText={t=>setPassword(t)}
+                    password={true}
+                />
+                <CustomButton onPress={register}>
                     <CustomButtonText>CADASTRAR</CustomButtonText>
                 </CustomButton>
             </InputArea>
