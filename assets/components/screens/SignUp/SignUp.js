@@ -13,7 +13,8 @@ export default function({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-
+    const { dispatch: userDispatch } = useContext(UserContext);
+    
     function signIn() {
         navigation.navigate('SignIn');
     }
@@ -26,11 +27,11 @@ export default function({navigation}) {
             let res = await Api.signUp(name, email, password);
             if (res.token) {
                 alert('Usuário cadastrado com sucesso!');
-                await AsyncStorage.setItem('token', json.token);
+                await AsyncStorage.setItem('token', res.token);
                 userDispatch({
                     type: 'setAvatar',
                     payload: {
-                        avatar: json.data.avatar
+                        avatar: res.data.avatar
                     }
                 });
                 navigation.navigate('MainTab');

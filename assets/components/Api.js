@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const BASE_API = 'http://127.0.0.1:8000/api';
 
 export default {
@@ -35,6 +37,13 @@ export default {
             body: JSON.stringify({name, email, password})
         });
         const json = await req.json();
+        return json;
+    },
+    getServicesProvider: async () => {
+        const token = await AsyncStorage.getItem('token');
+        const req = await fetch(`${BASE_API}/it_services?token=${token}`);
+        const json = await req.json();
+        console.log(json);
         return json;
     }
 }
